@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BABA CLASSTECH Online Test</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:#f0f4fa;color:#172554;
+}
+header{
+ background:#123b70;color:white;
+ text-align:center;padding:25px 10px;
+}
+header h1{margin:0;font-size:27px}
+header p{margin-bottom:0}
+.container{
+ max-width:600px;margin:20px auto;
+ padding:15px;
+}
+.card{
+ background:white;padding:20px;
+ border-radius:14px;
+ box-shadow:0 3px 12px #0001;
+ margin-bottom:16px;
+}
+input,select{
+ width:100%;padding:13px;
+ margin:8px 0 15px;
+ border:1px solid #bbb;
+ border-radius:8px;font-size:16px;
+}
+button{
+ background:#1763b1;color:white;
+ border:0;padding:13px 20px;
+ border-radius:8px;font-size:16px;
+ width:100%;margin-top:10px;
+}
+.question{
+ font-weight:bold;font-size:18px;
+ margin-bottom:14px;
+}
+.option{
+ display:block;background:#f1f5f9;
+ padding:12px;margin:9px 0;
+ border-radius:8px;
+}
+.option input{width:auto;margin:0 8px 0 0}
+#test,#result{display:none}
+.timer{
+ text-align:center;color:#dc2626;
+ font-weight:bold;font-size:20px;
+}
+footer{text-align:center;padding:20px;color:#64748b}
+</style>
+</head>
+<body>
+
+<header>
+<h1>BABA CLASSTECH</h1>
+<p>ONLINE EXAMINATION PORTAL</p>
+</header>
+
+<div class="container">
+
+<div class="card" id="login">
+<h2>Student Registration</h2>
+<label>Student Name</label>
+<input id="student" placeholder="Enter your name">
+
+<label>Select Class</label>
+<select id="className">
+<option value="">Select Class</option>
+<option>Class 6</option>
+<option>Class 7</option>
+<option>Class 8</option>
+<option>Class 9</option>
+<option>Class 10</option>
+</select>
+
+<label>Select Subject</label>
+<select id="subject">
+<option>Science</option>
+<option>Mathematics</option>
+<option>English</option>
+<option>Social Science</option>
+</select>
+
+<button onclick="startTest()">START TEST</button>
+</div>
+
+<div class="card" id="test">
+<div class="timer">Time Left: <span id="time">10:00</span></div>
+<h2 id="welcome"></h2>
+<div id="questions"></div>
+<button onclick="submitTest()">SUBMIT TEST</button>
+</div>
+
+<div class="card" id="result">
+<h2>Test Result</h2>
+<h3 id="studentResult"></h3>
+<h1 id="score"></h1>
+<p id="percentage"></p>
+<div id="review"></div>
+<button onclick="location.reload()">RETAKE TEST</button>
+</div>
+
+</div>
+
+<footer>
+© 2026 BABA CLASSTECH | Learn • Practice • Succeed
+</footer>
+
+<script>
+const quiz=[
+{
+q:"What is the full form of CPU?",
+o:["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing Unit"],
+a:0
+},
+{
+q:"Which is an input device?",
+o:["Monitor","Printer","Keyboard","Speaker"],
+a:2
+},
+{
+q:"Which language is used to create web page structure?",
+o:["HTML","MS Word","Excel","Paint"],
+a:0
+},
+{
+q:"How many days are there in a week?",
+o:["5","6","7","8"],
+a:2
+},
+{
+q:"Which is the brain of a computer?",
+o:["Mouse","CPU","Monitor","Keyboard"],
+a:1
+}
+];
+
+let timeLeft=600;
+let clock;
+let submitted=false;
+
+function startTest(){
+let name=document.getElementById("student").value.trim();
+let cls=document.getElementById("className").value;
+if(!name||!cls){
+alert("Please enter your name and class");
+return;
+}
+document.getElementById("login").style.display="none";
+document.getElementById("test").style.display="block";
+document.getElementById("welcome").innerText="Welcome "+name;
+let html="";
+quiz.forEach((q,i)=>{
+html+=`<div class="card">
+<div class="question">${i+1}. ${q.q}</div>`;
+q.o.forEach((option,j)=>{
+html+=`<label class="option">
+<input type="radio" name="q${i}" value="${j}">
+${option}</label>`;
+});
+html+="</div>";
+});
+document.getElementById("questions").innerHTML=html;
+clock=setInterval(()=>{
+timeLeft--;
+document.getElementById("time").innerText=
+Math.floor(timeLeft/60)+":"+String(timeLeft%60).padStart(2,"0");
+if(timeLeft<=0)submitTest();
+},1000);
+}
+
+function submitTest(){
+if(submitted)return;
+if(!confirm("Are you sure you want to submit?"))return;
+submitted=true;
+clearInterval(clock);
+let marks=0,review="";
+quiz.forEach((q,i)=>{
+let selected=document.querySelector(`input[name="q${i}"]:checked`);
+let answer=selected?Number(selected.value):-1;
+if(answer===q.a)marks++;
+review+=`<p>Q${i+1}: ${answer===q.a?"✅ Correct":"❌ Incorrect"}<br>Correct Answer: ${q.o[q.a]}</p>`;
+});
+let percent=(marks/quiz.length)*100;
+document.getElementById("test").style.display="none";
+document.getElementById("result").style.display="block";
+document.getElementById("studentResult").innerText=
+document.getElementById("student").value+" | "+document.getElementById("className").value;
+document.getElementById("score").innerText=marks+" / "+quiz.length;
+document.getElementById("percentage").innerText=
+"Percentage: "+percent.toFixed(1)+"%";
+document.getElementById("review").innerHTML=review;
+}
+</script>
+</body>
+</html>
